@@ -52,7 +52,7 @@ public class FcmTokenService {
                                     memberId, request.deviceIdentifier(), request.fcmToken());
                         },
                         () -> {
-                            FcmToken saved = fcmTokenRepository.save(
+                            fcmTokenRepository.save(
                                     FcmToken.of(
                                             memberId,
                                             request.fcmToken(),
@@ -62,7 +62,6 @@ public class FcmTokenService {
                                             now
                                     )
                             );
-                            log.info(saved.toString());
                             log.debug("[FCM TOKEN] 신규 토큰 저장: memberId={}, deviceIdentifier={}, fcmToken={}",
                                     memberId, request.deviceIdentifier(), request.fcmToken());
                         }
