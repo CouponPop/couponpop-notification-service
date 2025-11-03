@@ -19,6 +19,31 @@ flyway {
     cleanDisabled = true
 }
 
+// .env로부터 GITHUB_ACTOR와 GITHUB_TOKEN을 읽어오는 함수
+def loadGithubCredentials() {
+    def credentials = [:]
+    def envFile = file('.env')
+    def foundKeys = 0
+
+    if (envFile.exists()) {
+        envFile.eachLine { line ->
+            if (foundKeys == 2) return // 두 키 다 찾으면 조기 종료
+            if (!line.startsWith('#') && line.contains('=')) {
+                def (key, value) = line.split('=', 2)*.trim()
+                if (key in ['GITHUB_ACTOR', 'GITHUB_TOKEN']) {
+                    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+                        value = value.substring(1, value.length() - 1)
+                    }
+                    credentials[key] = value
+                    foundKeys++ //
+                }
+            }
+        }
+    }
+
+    return credentials
+}
+
 group = 'com.couponpop'
 version = '0.0.1-SNAPSHOT'
 description = 'notification-service'
@@ -37,6 +62,16 @@ configurations {
 
 repositories {
     mavenCentral()
+
+    // GitHub Packages에 배포된 쿠폰팝 보안 모듈 의존성 추가
+    maven {
+        url = uri("https://maven.pkg.github.com/CouponPop/couponpop-security-module")
+        credentials {
+            def githubCredentials = loadGithubCredentials()
+            username = githubCredentials.GITHUB_ACTOR ?: System.getenv("GITHUB_ACTOR") ?: "unknown"
+            password = githubCredentials.GITHUB_TOKEN ?: System.getenv("GITHUB_TOKEN") ?: "unknown"
+        }
+    }
 }
 
 dependencies {
@@ -63,6 +98,9 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // [CouponPop Security Module]
+    implementation 'com.couponpop:couponpop-security:0.0.1-SNAPSHOT'
 }
 
 tasks.named('test') {
