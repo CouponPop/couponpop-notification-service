@@ -23,6 +23,8 @@ public class NotificationService {
     private final FcmTokenRepository fcmTokenRepository;
     private final FcmSendService fcmSendService;
 
+    // TODO: 추후 전략 패턴 리팩토링 예정
+
     /**
      * 쿠폰 사용한 손님에게 푸시 알림 전송
      */
