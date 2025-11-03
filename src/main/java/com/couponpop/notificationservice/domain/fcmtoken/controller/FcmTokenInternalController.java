@@ -8,6 +8,7 @@ import com.couponpop.security.dto.AuthMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,7 +20,7 @@ public class FcmTokenInternalController {
     private final FcmTokenInternalService fcmTokenInternalService;
 
     @PostMapping("/v1/fcm-token/expire")
-    public ResponseEntity<ApiResponse<Void>> expireFcmToken(FcmTokenExpireRequest fcmTokenExpireRequest, @CurrentMember AuthMember authMember) {
+    public ResponseEntity<ApiResponse<Void>> expireFcmToken(@RequestBody FcmTokenExpireRequest fcmTokenExpireRequest, @CurrentMember AuthMember authMember) {
 
         fcmTokenInternalService.expireFcmToken(fcmTokenExpireRequest, authMember.id());
         return ApiResponse.noContent();
