@@ -39,3 +39,6 @@ out/
 
 ### conf ###
 conf/*.conf
+
+### scripts ###
+docker.sh
