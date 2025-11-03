@@ -66,6 +66,7 @@ repositories {
     // GitHub Packages에 배포된 쿠폰팝 보안 모듈 의존성 추가
     maven {
         url = uri("https://maven.pkg.github.com/CouponPop/couponpop-security-module")
+        url = uri("https://maven.pkg.github.com/CouponPop/couponpop-core-module")
         credentials {
             def githubCredentials = loadGithubCredentials()
             username = githubCredentials.GITHUB_ACTOR ?: System.getenv("GITHUB_ACTOR") ?: "unknown"
@@ -101,6 +102,7 @@ dependencies {
 
     // [CouponPop Security Module]
     implementation 'com.couponpop:couponpop-security:0.0.1-SNAPSHOT'
+    implementation 'com.couponpop:couponpop-core:0.0.2-SNAPSHOT'
 }
 
 tasks.named('test') {
