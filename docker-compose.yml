@@ -8,3 +8,13 @@ services:
       redis-server --save "" --appendonly no
     ports:
       - "6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:4.1.5-management
+    container_name: couponpop-rabbitmq
+    ports:
+      - "5672:5672"   # RabbitMQ 기본 포트
+      - "15672:15672" # RabbitMQ Management UI 포트
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
