@@ -1,4 +1,13 @@
+server:
+  port: 8080
+
 spring:
+  application:
+    name: notification-service
+
+  config:
+    import: optional:aws-parameterstore:/couponpop/prod/notification-service/
+
   jpa:
     hibernate:
       ddl-auto: none
@@ -16,3 +25,16 @@ logging:
     org.springframework: INFO
     org.hibernate.SQL: WARN
     org.hibernate.orm.jdbc.bind: WARN
+
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

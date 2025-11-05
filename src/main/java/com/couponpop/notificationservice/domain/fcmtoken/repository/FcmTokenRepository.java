@@ -15,4 +15,6 @@ public interface FcmTokenRepository extends JpaRepository<FcmToken, Long> {
     List<FcmToken> findByMemberIdAndNotificationEnabledIsTrue(Long memberId);
 
     Optional<FcmToken> findByMemberIdAndFcmToken(Long memberId, String fcmToken);
+
+    List<FcmToken> findAllByMemberIdIn(List<Long> memberIds);
 }
