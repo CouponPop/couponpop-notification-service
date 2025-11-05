@@ -19,19 +19,23 @@ public class CouponUsageStatsFcmSendEventConsumer {
 
     @RabbitListener(queues = "${rabbitmq.coupon-usage-stats-fcm-send.queue}")
     public void handle(CouponUsageStatsFcmSendRequest message) {
-        log.info("쿠폰 사용 통계 FCM 요청 수신: {}", message);
+        try {
+            log.info("쿠폰 사용 통계 FCM 요청 수신: {}", message);
 
-        Long memberId = message.memberId();
-        List<String> tokens = message.tokens();
-        String topDong = message.topDong();
-        int topHour = message.topHour();
-        int activeEventCount = message.activeEventCount();
+            Long memberId = message.memberId();
+            List<String> tokens = message.tokens();
+            String topDong = message.topDong();
+            int topHour = message.topHour();
+            int activeEventCount = message.activeEventCount();
 
-        String title = NotificationTemplates.COUPON_USAGE_STATS_TITLE.formatted(topDong, activeEventCount);
-        String body = NotificationTemplates.COUPON_USAGE_STATS_BODY.formatted(topHour);
+            String title = NotificationTemplates.COUPON_USAGE_STATS_TITLE.formatted(topDong, activeEventCount);
+            String body = NotificationTemplates.COUPON_USAGE_STATS_BODY.formatted(topHour);
 
-        for (String token : tokens) {
-            fcmSendService.sendNotification(memberId, token, title, body);
+            for (String token : tokens) {
+                fcmSendService.sendNotification(memberId, token, title, body);
+            }
+        } catch (Exception e) {
+            log.error("쿠폰 사용 통계 FCM 요청 처리 중 오류 발생: {}", message, e);
         }
     }
 }
