@@ -45,6 +45,7 @@ jwt:
     key: ${JWT_SECRET_KEY}
     white-list:
       - /actuator/health
+      - /actuator/prometheus
       - /error
       - /swagger-ui/**
       - /swagger-ui.html
