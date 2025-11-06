@@ -5,6 +5,9 @@ import com.couponpop.notificationservice.common.rabbitmq.dto.request.CouponUsage
 import com.couponpop.notificationservice.domain.notification.constants.NotificationTemplates;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.annotation.Exchange;
+import org.springframework.amqp.rabbit.annotation.Queue;
+import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
@@ -16,8 +19,12 @@ import java.util.List;
 public class CouponUsageStatsFcmSendEventConsumer {
 
     private final FcmSendService fcmSendService;
-
-    @RabbitListener(queues = "${rabbitmq.coupon-usage-stats-fcm-send.queue}")
+    
+    @RabbitListener(bindings = @QueueBinding(
+            value = @Queue(value = "${rabbitmq.coupon-usage-stats-fcm-send.queue}", durable = "true"),
+            exchange = @Exchange(value = "${rabbitmq.coupon-usage-stats-fcm-send.exchange}", type = "direct"),
+            key = "${rabbitmq.coupon-usage-stats-fcm-send.routing-key}"
+    ))
     public void handle(CouponUsageStatsFcmSendRequest message) {
         try {
             log.info("쿠폰 사용 통계 FCM 요청 수신: {}", message);
