@@ -16,7 +16,7 @@ flyway {
     locations = ['filesystem:src/main/resources/db/migration']
     baselineOnMigrate = true
     baselineVersion = 1
-    cleanDisabled = false
+    cleanDisabled = true
 }
 
 // .env로부터 GITHUB_ACTOR와 GITHUB_TOKEN을 읽어오는 함수
