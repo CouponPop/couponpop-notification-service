@@ -110,7 +110,7 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // [CouponPop Security Module]
-    implementation 'com.couponpop:couponpop-security:0.0.1-SNAPSHOT'
+    implementation 'com.couponpop:couponpop-security:0.0.3-SNAPSHOT'
 
     // [CouponPop Core Module]
     implementation 'com.couponpop:couponpop-core:0.0.7-SNAPSHOT'
