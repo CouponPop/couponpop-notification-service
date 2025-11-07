@@ -25,7 +25,7 @@ public class CouponConsumer {
     private final FcmSendService fcmSendService;
 
     @RabbitListener(queues = COUPON_USED_QUEUE)
-    public void COUPON_USED_QUEUE(CouponUsedMessage message) {
+    public void couponUsedHandle(CouponUsedMessage message) {
         try {
             log.info("[쿠폰 사용 이벤트] : {}", message);
             Long memberId = message.memberId();
@@ -43,7 +43,7 @@ public class CouponConsumer {
     }
 
     @RabbitListener(queues = COUPON_ISSUED_QUEUE)
-    public void COUPON_ISSUED_QUEUE(String event) throws Exception {
+    public void couponIssuedHandle(String event) throws Exception {
         // 일부러 예외 발생
         if (event.equals("ex")) {
             throw new Exception("DLQ 테스트용 예외 발생!");
