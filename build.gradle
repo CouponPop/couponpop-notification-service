@@ -113,7 +113,7 @@ dependencies {
     implementation 'com.couponpop:couponpop-security:0.0.1-SNAPSHOT'
 
     // [CouponPop Core Module]
-    implementation 'com.couponpop:couponpop-core:0.0.5-SNAPSHOT'
+    implementation 'com.couponpop:couponpop-core:0.0.7-SNAPSHOT'
 
     // [AWS]
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-parameter-store'
