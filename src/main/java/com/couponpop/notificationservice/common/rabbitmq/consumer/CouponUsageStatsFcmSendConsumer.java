@@ -1,31 +1,26 @@
 package com.couponpop.notificationservice.common.rabbitmq.consumer;
 
+import com.couponpop.couponpopcoremodule.dto.coupon.event.model.CouponUsageStatsFcmSendMessage;
 import com.couponpop.notificationservice.common.fcm.service.FcmSendService;
-import com.couponpop.notificationservice.common.rabbitmq.dto.request.CouponUsageStatsFcmSendRequest;
 import com.couponpop.notificationservice.domain.notification.constants.NotificationTemplates;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.annotation.Exchange;
-import org.springframework.amqp.rabbit.annotation.Queue;
-import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+import static com.couponpop.notificationservice.common.config.CouponUsageStatsFcmSendConsumerConfig.COUPON_USAGE_STATS_FCM_SEND_QUEUE;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CouponUsageStatsFcmSendEventConsumer {
+public class CouponUsageStatsFcmSendConsumer {
 
     private final FcmSendService fcmSendService;
-    
-    @RabbitListener(bindings = @QueueBinding(
-            value = @Queue(value = "${rabbitmq.coupon-usage-stats-fcm-send.queue}", durable = "true"),
-            exchange = @Exchange(value = "${rabbitmq.coupon-usage-stats-fcm-send.exchange}", type = "direct"),
-            key = "${rabbitmq.coupon-usage-stats-fcm-send.routing-key}"
-    ))
-    public void handle(CouponUsageStatsFcmSendRequest message) {
+
+    @RabbitListener(queues = COUPON_USAGE_STATS_FCM_SEND_QUEUE)
+    public void handle(CouponUsageStatsFcmSendMessage message) {
         try {
             log.info("쿠폰 사용 통계 FCM 요청 수신: {}", message);
 
