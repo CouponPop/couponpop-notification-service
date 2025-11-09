@@ -76,38 +76,38 @@ pipeline {
                 }
 
                 // === 3. Build, Test & Generate Reports ===
-                stage('Build, Test & Generate Reports') {
-                    steps {
-                        withCredentials([
-                            usernamePassword(credentialsId: env.GPR_CREDENTIALS_ID, usernameVariable: 'GITHUB_ACTOR', passwordVariable: 'GITHUB_TOKEN'),
-                            // Context 로딩용 Credential 로드
-                            string(credentialsId: env.REDIS_HOST_CREDENTIAL, variable: 'REDIS_HOST'),
-                            string(credentialsId: env.REDIS_PORT_CREDENTIAL, variable: 'REDIS_PORT'),
-                            string(credentialsId: env.RABBITMQ_HOST_CREDENTIAL, variable: 'RABBITMQ_HOST'),
-                            string(credentialsId: env.RABBITMQ_PORT_CREDENTIAL, variable: 'RABBITMQ_PORT'),
-                            string(credentialsId: env.JWT_SECRET_KEY_CREDENTIAL, variable: 'JWT_SECRET_KEY')
-                        ]) {
-                            sh 'chmod +x ./gradlew'
-                            sh '''
-                            set -e
+                 stage('Build, Test & Generate Reports') {
+                      steps {
+                          withCredentials([
+                              usernamePassword(credentialsId: env.GPR_CREDENTIALS_ID, usernameVariable: 'GITHUB_ACTOR', passwordVariable: 'GITHUB_TOKEN'),
+                              string(credentialsId: env.REDIS_HOST_CREDENTIAL, variable: 'REDIS_HOST'),
+                              string(credentialsId: env.REDIS_PORT_CREDENTIAL, variable: 'REDIS_PORT'),
+                              string(credentialsId: env.RABBITMQ_HOST_CREDENTIAL, variable: 'RABBITMQ_HOST'),
+                              string(credentialsId: env.RABBITMQ_PORT_CREDENTIAL, variable: 'RABBITMQ_PORT'),
+                              string(credentialsId: env.JWT_SECRET_KEY_CREDENTIAL, variable: 'JWT_SECRET_KEY')
+                          ]) {
+                              sh 'chmod +x ./gradlew'
+                              sh '''
+                                  set -e
 
-                            # Application Context 로딩에 필요한 모든 환경 변수 주입
-                            GITHUB_ACTOR=${GITHUB_ACTOR} \
-                            GITHUB_TOKEN=${GITHUB_TOKEN} \
-                            SPRING_PROFILES_ACTIVE=test \
-                            TZ=Asia/Seoul \
-                            REDIS_HOST=${REDIS_HOST} \
-                            REDIS_PORT=${REDIS_PORT} \
-                            RABBITMQ_HOST=${RABBITMQ_HOST} \
-                            RABBITMQ_PORT=${RABBITMQ_PORT} \
-                            JWT_SECRET_KEY=${JWT_SECRET_KEY} \
-                            ./gradlew clean build --no-daemon -Dspring.profiles.active=test
+                                  # Application Context 로딩에 필요한 모든 환경 변수 주입
+                                  # 이 변수들은 Shell 환경에서만 사용 (System.getenv()가 읽음)
+                                  SPRING_PROFILES_ACTIVE=test \
+                                  TZ=Asia/Seoul \
+                                  REDIS_HOST=${REDIS_HOST} \
+                                  REDIS_PORT=${REDIS_PORT} \
+                                  RABBITMQ_HOST=${RABBITMQ_HOST} \
+                                  RABBITMQ_PORT=${RABBITMQ_PORT} \
+                                  JWT_SECRET_KEY=${JWT_SECRET_KEY} \
+                                  GITHUB_ACTOR=${GITHUB_ACTOR} \
+                                  GITHUB_TOKEN=${GITHUB_TOKEN} \
+                                  ./gradlew clean build --no-daemon -Dspring.profiles.active=test
 
-                            rm -f build/libs/*plain*.jar
-                            '''
-                        }
-                    }
-                }
+                                  rm -f build/libs/*plain*.jar
+                              '''
+                          }
+                      }
+                  }
 
                 // === 4. SonarQube Analysis ===
                 stage('SonarQube Analysis') {
