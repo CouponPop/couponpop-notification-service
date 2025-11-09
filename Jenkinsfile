@@ -172,14 +172,18 @@ pipeline {
                                     // 3. Shell 스크립트 실행 (''' 사용, 이스케이프 불필요)
                                     sh '''
                                         set -e
+
+                                        # BuildKit 활성화
+                                        export DOCKER_BUILDKIT=1
+
+                                        # GITHUB_TOKEN을 임시 파일로 저장 (src 파일로 사용)
+                                        echo -n "$GITHUB_TOKEN" > github_token.tmp
+
                                         echo "🔐 Logging into ECR..."
                                         aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_REGISTRY_URI
 
                                         echo "🏗️  Building Docker image..."
-                                        # DOCKER_BUILDKIT 활성화 및 --secret 옵션 사용
-                                        export DOCKER_BUILDKIT=1
-                                        # GITHUB_TOKEN을 임시 파일로 저장
-                                        echo -n "$GITHUB_TOKEN" > github_token.tmp
+
                                         docker build \
                                             --build-arg GITHUB_ACTOR=$GITHUB_ACTOR \
                                             --secret id=github_token,src=github_token.tmp \
