@@ -27,6 +27,12 @@ pipeline {
         FCM_KEY_CREDENTIALS_ID      = 'fcm-service-account-key'
         SONAR_TOKEN_CREDENTIALS_ID  = 'sonarqube-token'
 
+        REDIS_HOST_CREDENTIAL       = 'redis-host-for-test'
+        REDIS_PORT_CREDENTIAL       = 'redis-port-for-test'
+        RABBITMQ_HOST_CREDENTIAL    = 'rabbitmq-host-for-test'
+        RABBITMQ_PORT_CREDENTIAL    = 'rabbitmq-port-for-test'
+        JWT_SECRET_KEY_CREDENTIAL   = 'jwt-secret-key-for-test'
+
         SONAR_HOST_URL              = 'http://sonarqube:9000'
     }
 
@@ -71,13 +77,29 @@ pipeline {
                 // === 3. Build, Test & Generate Reports ===
                 stage('Build, Test & Generate Reports') {
                     steps {
-                        withCredentials([usernamePassword(credentialsId: env.GPR_CREDENTIALS_ID, usernameVariable: 'GITHUB_ACTOR', passwordVariable: 'GITHUB_TOKEN')]) {
+                        withCredentials([
+                            usernamePassword(credentialsId: env.GPR_CREDENTIALS_ID, usernameVariable: 'GITHUB_ACTOR', passwordVariable: 'GITHUB_TOKEN'),
+                            // Context 로딩용 Credential 로드
+                            string(credentialsId: env.REDIS_HOST_CREDENTIAL, variable: 'REDIS_HOST'),
+                            string(credentialsId: env.REDIS_PORT_CREDENTIAL, variable: 'REDIS_PORT'),
+                            string(credentialsId: env.RABBITMQ_HOST_CREDENTIAL, variable: 'RABBITMQ_HOST'),
+                            string(credentialsId: env.RABBITMQ_PORT_CREDENTIAL, variable: 'RABBITMQ_PORT'),
+                            string(credentialsId: env.JWT_SECRET_KEY_CREDENTIAL, variable: 'JWT_SECRET_KEY')
+                        ]) {
                             sh 'chmod +x ./gradlew'
                             sh '''
                             set -e
+
+                            # Application Context 로딩에 필요한 모든 환경 변수 주입
                             SPRING_PROFILES_ACTIVE=test \
                             TZ=Asia/Seoul \
-                            ./gradlew clean build --no-daemon || exit 1
+                            REDIS_HOST=${REDIS_HOST} \
+                            REDIS_PORT=${REDIS_PORT} \
+                            RABBITMQ_HOST=${RABBITMQ_HOST} \
+                            RABBITMQ_PORT=${RABBITMQ_PORT} \
+                            JWT_SECRET_KEY=${JWT_SECRET_KEY} \
+                            ./gradlew clean build --no-daemon -Dspring.profiles.active=test
+
                             rm -f build/libs/*plain*.jar
                             '''
                         }
