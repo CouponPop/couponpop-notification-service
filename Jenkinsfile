@@ -45,6 +45,7 @@ pipeline {
                 anyOf {
                     branch 'main'
                     branch 'dev'
+                    branch 'add-github-pat'
                     changeRequest(target: 'main')
                     changeRequest(target: 'dev')
                 }
@@ -138,6 +139,7 @@ pipeline {
                 anyOf {
                     branch 'main'
                     branch 'dev'
+                    branch 'add-github-pat'
                 }
             }
             stages {
@@ -174,11 +176,16 @@ pipeline {
                                         aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_REGISTRY_URI
 
                                         echo "🏗️  Building Docker image..."
-                                        # --build-arg 옵션을 사용하여 PAT 인증 정보를 Docker 빌드 환경에 전달
+                                        # DOCKER_BUILDKIT 활성화 및 --secret 옵션 사용
+                                        export DOCKER_BUILDKIT=1
+                                        # GITHUB_TOKEN을 임시 파일로 저장
+                                        echo -n "$GITHUB_TOKEN" > github_token.tmp
                                         docker build \
                                             --build-arg GITHUB_ACTOR=$GITHUB_ACTOR \
-                                            --build-arg GITHUB_TOKEN=$GITHUB_TOKEN \
+                                            --secret id=github_token,src=github_token.tmp \
                                             -t $IMAGE_TAG -t $LATEST_TAG .
+                                        # 임시 파일 삭제
+                                        rm github_token.tmp
 
                                         echo "📤 Pushing to ECR..."
                                         docker push $IMAGE_TAG

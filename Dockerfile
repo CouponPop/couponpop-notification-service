@@ -14,17 +14,17 @@ COPY gradlew .
 COPY gradle gradle
 COPY build.gradle settings.gradle ./
 
-# Gradle이 인증 정보를 시스템 속성으로 읽도록 -P 옵션을 사용하여 주입
-RUN chmod +x ./gradlew && ./gradlew dependencies --no-daemon \
-    -Pgithub.user=${GITHUB_ACTOR} \
-    -Pgithub.token=${GITHUB_TOKEN} || return 0
+# Gradle이 인증 정보를 읽을 수 있도록 secret을 마운트하고 환경 변수로 export 합니다.
+RUN --mount=type=secret,id=github_token \
+    export GITHUB_TOKEN=$(cat /run/secrets/github_token) && \
+    chmod +x ./gradlew && ./gradlew dependencies --no-daemon || return 0
 
 # 소스 복사 및 빌드
 COPY src src
-# 빌드 시에도 인증 정보를 다시 주입하여 compileJava 성공을 보장
-RUN ./gradlew clean bootJar --no-daemon \
-    -Pgithub.user=${GITHUB_ACTOR} \
-    -Pgithub.token=${GITHUB_TOKEN}
+# 빌드 시에도 동일하게 secret을 마운트합니다.
+RUN --mount=type=secret,id=github_token \
+    export GITHUB_TOKEN=$(cat /run/secrets/github_token) && \
+    ./gradlew clean bootJar --no-daemon
 
 
 # ---------- [2단계] Runtime Stage ----------
