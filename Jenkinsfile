@@ -84,7 +84,7 @@ pipeline {
                               string(credentialsId: env.REDIS_PORT_CREDENTIAL, variable: 'REDIS_PORT'),
                               string(credentialsId: env.RABBITMQ_HOST_CREDENTIAL, variable: 'RABBITMQ_HOST'),
                               string(credentialsId: env.RABBITMQ_PORT_CREDENTIAL, variable: 'RABBITMQ_PORT'),
-                              string(credentialsId: env.JWT_SECRET_KEY_CREDENTIAL, variable: 'JWT_SECRET_KEY')
+                              string(credentialsId: env.JWT_SECRET_KEY_CREDENTIAL, variable: 'JWT_SECRET_KEY'),
                               string(credentialsId: env.DB_URL_KEY_CREDENTIAL, variable: 'DB_URL')
                           ]) {
                               sh 'chmod +x ./gradlew'
