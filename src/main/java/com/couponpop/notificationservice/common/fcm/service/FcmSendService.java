@@ -133,8 +133,7 @@ public class FcmSendService {
             return switch (errorCode) {
                 case INTERNAL, /* 서버 내부 오류 */
                      UNAVAILABLE, /* FCM 서비스 사용 불가 */
-                     QUOTA_EXCEEDED, /* 할당량 초과 */
-                     SENDER_ID_MISMATCH /* 발신자 ID 불일치 */ -> true;
+                     QUOTA_EXCEEDED /* 할당량 초과 */ -> true;
                 default -> false;
             };
         }
