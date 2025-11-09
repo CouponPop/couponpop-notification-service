@@ -169,7 +169,7 @@ pipeline {
                                     "LATEST_TAG=${latestTag}",
                                     "REGION=${env.AWS_REGION}"
                                 ]) {
-                                    // 3. 순수 Shell 스크립트 실행 (''' 사용, 이스케이프 불필요)
+                                    // 3. Shell 스크립트 실행 (''' 사용, 이스케이프 불필요)
                                     sh '''
                                         set -e
                                         echo "🔐 Logging into ECR..."
