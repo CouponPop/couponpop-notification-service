@@ -113,13 +113,16 @@ dependencies {
     implementation 'com.couponpop:couponpop-security:0.0.3-SNAPSHOT'
 
     // [CouponPop Core Module]
-    implementation 'com.couponpop:couponpop-core:0.0.9-SNAPSHOT'
+    implementation 'com.couponpop:couponpop-core:0.0.13-SNAPSHOT'
 
     // [AWS]
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-parameter-store'
 
     // [RabbitMQ]
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
+
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
     // [Jackson]
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'

@@ -35,8 +35,9 @@ class NotificationHistoryServiceTest {
         @DisplayName("성공 상태의 알림 히스토리를 저장한다")
         void createNotificationHistory_success_statusSuccess() {
             // given
+            String traceId = "trace-id";
             Long memberId = 1L;
-            NotificationHistoryPayload payload = NotificationHistoryPayload.of(memberId, NotificationHistoryType.FCM, "제목", "본문", NotificationHistoryStatus.SUCCESS, null);
+            NotificationHistoryPayload payload = NotificationHistoryPayload.of(traceId, memberId, NotificationHistoryType.FCM, "제목", "본문", NotificationHistoryStatus.SUCCESS, null);
 
             // when
             notificationHistoryService.createNotificationHistory(payload);
@@ -46,6 +47,7 @@ class NotificationHistoryServiceTest {
             verify(notificationHistoryRepository).save(captor.capture());
 
             NotificationHistory saved = captor.getValue();
+            assertThat(saved.getTraceId()).isEqualTo(traceId);
             assertThat(saved.getMemberId()).isEqualTo(memberId);
             assertThat(saved.getType()).isEqualTo(NotificationHistoryType.FCM);
             assertThat(saved.getTitle()).isEqualTo("제목");
@@ -59,8 +61,9 @@ class NotificationHistoryServiceTest {
         @DisplayName("실패 상태와 실패 사유를 함께 저장한다")
         void createNotificationHistory_success_statusFailure() {
             // given
+            String traceId = "trace-id";
             Long memberId = 2L;
-            NotificationHistoryPayload payload = NotificationHistoryPayload.of(memberId, NotificationHistoryType.FCM, "실패 제목", "실패 본문", NotificationHistoryStatus.FAILURE, "전송 실패");
+            NotificationHistoryPayload payload = NotificationHistoryPayload.of(traceId, memberId, NotificationHistoryType.FCM, "실패 제목", "실패 본문", NotificationHistoryStatus.FAILURE, "전송 실패");
 
             // when
             notificationHistoryService.createNotificationHistory(payload);
@@ -70,6 +73,7 @@ class NotificationHistoryServiceTest {
             verify(notificationHistoryRepository).save(captor.capture());
 
             NotificationHistory saved = captor.getValue();
+            assertThat(saved.getTraceId()).isEqualTo(traceId);
             assertThat(saved.getMemberId()).isEqualTo(memberId);
             assertThat(saved.getType()).isEqualTo(NotificationHistoryType.FCM);
             assertThat(saved.getTitle()).isEqualTo("실패 제목");
