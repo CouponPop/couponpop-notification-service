@@ -182,11 +182,12 @@ pipeline {
 
                                         echo "🏗️  Building Docker image using Buildx..."
 
-                                        # 'docker buildx build' 명령과 --secret 및 --load 사용
-                                        docker buildx build \
-                                            --secret id=github_token,src=github_token.tmp \
-                                            -t $IMAGE_TAG -t $LATEST_TAG \
-                                            --load .
+                                        export DOCKER_BUILDKIT=1
+                                        export DOCKER_CLI_EXPERIMENTAL=enabled
+
+                                        docker build \
+                                          --secret id=github_token,src=github_token.tmp \
+                                          -t $IMAGE_TAG -t $LATEST_TAG .
 
                                         # 임시 파일 삭제 (보안)
                                         rm github_token.tmp
