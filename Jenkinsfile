@@ -147,7 +147,10 @@ pipeline {
                 // === 5. Build & Push Docker Image (GString 문제 해결) ===
                 stage('Build & Push Docker Image') {
                     steps {
-                        withCredentials([string(credentialsId: env.AWS_ACCOUNT_ID_CREDENTIALS_ID, variable: 'AWS_ACCOUNT_ID')]) {
+                        withCredentials([
+                            string(credentialsId: env.AWS_ACCOUNT_ID_CREDENTIALS_ID, variable: 'AWS_ACCOUNT_ID'),
+                            usernamePassword(credentialsId: env.GPR_CREDENTIALS_ID, usernameVariable: 'GITHUB_ACTOR', passwordVariable: 'GITHUB_TOKEN')
+                        ]) {
                             script {
                                 // 1. Groovy 스크립트 영역에서 변수 정의
                                 def ecrRegistryUri = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
@@ -173,7 +176,11 @@ pipeline {
                                         aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_REGISTRY_URI
 
                                         echo "🏗️  Building Docker image..."
-                                        docker build -t $IMAGE_TAG -t $LATEST_TAG .
+                                        # --build-arg 옵션을 사용하여 PAT 인증 정보를 Docker 빌드 환경에 전달
+                                        docker build \
+                                            --build-arg GITHUB_ACTOR=$GITHUB_ACTOR \
+                                            --build-arg GITHUB_TOKEN=$GITHUB_TOKEN \
+                                            -t $IMAGE_TAG -t $LATEST_TAG .
 
                                         echo "📤 Pushing to ECR..."
                                         docker push $IMAGE_TAG
