@@ -45,6 +45,7 @@ pipeline {
                 anyOf {
                     branch 'main'
                     branch 'dev'
+                    branch 'fix/add-github-pat'
                     changeRequest(target: 'main')
                     changeRequest(target: 'dev')
                 }
@@ -138,6 +139,7 @@ pipeline {
                 anyOf {
                     branch 'main'
                     branch 'dev'
+                    branch 'fix/add-github-pat'
                 }
             }
             stages {
