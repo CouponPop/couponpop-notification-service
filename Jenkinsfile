@@ -186,6 +186,7 @@ pipeline {
                                         export DOCKER_CLI_EXPERIMENTAL=enabled
 
                                         docker build \
+                                          --progress=plain \
                                           --secret id=github_token,src=github_token.tmp \
                                           -t $IMAGE_TAG -t $LATEST_TAG .
 
