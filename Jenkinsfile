@@ -10,8 +10,8 @@ pipeline {
     // 환경 변수 정의
     environment {
         // --- 서비스별 수정 필요 --- #❗서비스별로 SERVICE_NAME, ECS_CONTAINER_NAME만 수정하면 됩니다.
-        SERVICE_NAME                = 'api-gateway'
-        ECS_CONTAINER_NAME          = 'api-gateway'
+        SERVICE_NAME                = 'notification-service'
+        ECS_CONTAINER_NAME          = 'notification'
         SONAR_PROJECT_KEY           = "couponpop-${SERVICE_NAME}"
 
         // --- AWS 변수 (B/G 스크립트에서 사용) ---
