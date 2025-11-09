@@ -144,6 +144,6 @@ public class FcmSendService {
         }
         int statusCode = httpResponse.getStatusCode();
         return statusCode == 429 // Too Many Requests
-                || (statusCode >= 500 && statusCode < 600); // 5xx 서버 오류
+                || (500 <= statusCode && statusCode < 600); // 5xx 서버 오류
     }
 }
