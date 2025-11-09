@@ -91,6 +91,8 @@ pipeline {
                             set -e
 
                             # Application Context 로딩에 필요한 모든 환경 변수 주입
+                            GITHUB_ACTOR=${GITHUB_ACTOR} \
+                            GITHUB_TOKEN=${GITHUB_TOKEN} \
                             SPRING_PROFILES_ACTIVE=test \
                             TZ=Asia/Seoul \
                             REDIS_HOST=${REDIS_HOST} \
