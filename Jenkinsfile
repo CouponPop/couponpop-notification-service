@@ -102,8 +102,8 @@ pipeline {
                                   JWT_SECRET_KEY=${JWT_SECRET_KEY} \
                                   GITHUB_ACTOR=${GITHUB_ACTOR} \
                                   GITHUB_TOKEN=${GITHUB_TOKEN} \
-                                  DB_MASTER_URL=${DB_URL}
-                                  DB_SLAVE_URL=${DB_URL}
+                                  DB_MASTER_URL=${DB_URL} \
+                                  DB_SLAVE_URL=${DB_URL} \
                                   ./gradlew clean build --no-daemon -Dspring.profiles.active=test
 
                                   rm -f build/libs/*plain*.jar
