@@ -68,3 +68,7 @@ async:
     thread-name-prefix: ${ASYNC_FCM_THREAD_NAME_PREFIX:fcm-async-}
     wait-for-tasks-to-complete-on-shutdown: ${ASYNC_FCM_WAIT_FOR_TASKS_TO_COMPLETE_ON_SHUTDOWN:true}
     await-termination-seconds: ${ASYNC_FCM_AWAIT_TERMINATION_SECONDS:30}
+
+webhook:
+  slack:
+    url: ${SLACK_WEBHOOK_URL}

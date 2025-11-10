@@ -12,8 +12,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import static com.couponpop.notificationservice.common.constants.AsyncExecutors.FCM_TASK_EXECUTOR;
-
 
 @EnableAsync
 @Configuration
@@ -34,7 +32,7 @@ public class AsyncConfig {
      *   <li><strong>waitForTasksToCompleteOnShutdown</strong>: 종료 시 진행 중인 작업을 안전하게 마무리.</li>
      * </ul>
      */
-    @Bean(name = FCM_TASK_EXECUTOR)
+    @Bean
     public Executor fcmTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(asyncFcmProperties.getCorePoolSize());

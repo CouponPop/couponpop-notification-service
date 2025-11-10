@@ -4,6 +4,7 @@ import com.couponpop.notificationservice.domain.notificationhistory.enums.Notifi
 import com.couponpop.notificationservice.domain.notificationhistory.enums.NotificationHistoryType;
 
 public record NotificationHistoryPayload(
+        String traceId,
         Long memberId,
         NotificationHistoryType type,
         String title,
@@ -12,7 +13,16 @@ public record NotificationHistoryPayload(
         String failureReason
 ) {
 
-    public static NotificationHistoryPayload of(Long memberId, NotificationHistoryType type, String title, String body, NotificationHistoryStatus status, String failureReason) {
-        return new NotificationHistoryPayload(memberId, type, title, body, status, failureReason);
+    public static NotificationHistoryPayload of(
+            String traceId,
+            Long memberId,
+            NotificationHistoryType type,
+            String title,
+            String body,
+            NotificationHistoryStatus status,
+            String failureReason
+    ) {
+
+        return new NotificationHistoryPayload(traceId, memberId, type, title, body, status, failureReason);
     }
 }

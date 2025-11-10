@@ -18,3 +18,7 @@ spring:
 jwt:
   secret:
     key: Y291cG9ucG9wLXRlc3QtanVuaW9yLWJhY2tlbmQtZGV2ZWxvcGVyLXNlY3JldC1rZXktZm9yLWNpLWNkCg==
+
+webhook:
+  slack:
+    url: https://hooks.slack.com/services/DUMMY/URL

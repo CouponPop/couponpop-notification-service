@@ -24,6 +24,9 @@ public class NotificationHistory {
     private Long id;
 
     @Column(nullable = false)
+    private String traceId;
+
+    @Column(nullable = false)
     private Long memberId;
 
     @Enumerated(EnumType.STRING)
@@ -47,7 +50,8 @@ public class NotificationHistory {
     private LocalDateTime createdAt;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private NotificationHistory(Long memberId, NotificationHistoryType type, String title, String body, NotificationHistoryStatus status, String failureReason) {
+    private NotificationHistory(String traceId, Long memberId, NotificationHistoryType type, String title, String body, NotificationHistoryStatus status, String failureReason) {
+        this.traceId = traceId;
         this.memberId = memberId;
         this.type = type;
         this.title = title;
@@ -56,9 +60,10 @@ public class NotificationHistory {
         this.failureReason = failureReason;
     }
 
-    public static NotificationHistory of(Long memberId, NotificationHistoryType type, String title, String body, NotificationHistoryStatus status, String failureReason) {
+    public static NotificationHistory of(String traceId, Long memberId, NotificationHistoryType type, String title, String body, NotificationHistoryStatus status, String failureReason) {
         return NotificationHistory.builder()
                 .memberId(memberId)
+                .traceId(traceId)
                 .type(type)
                 .title(title)
                 .body(body)
