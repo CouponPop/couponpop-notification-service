@@ -32,6 +32,7 @@ pipeline {
         RABBITMQ_HOST_CREDENTIAL    = 'rabbitmq-host-for-test'
         RABBITMQ_PORT_CREDENTIAL    = 'rabbitmq-port-for-test'
         JWT_SECRET_KEY_CREDENTIAL   = 'jwt-secret-key-for-test'
+        DB_URL_KEY_CREDENTIAL       = 'db-url-for-test'
 
         SONAR_HOST_URL              = 'http://sonarqube:9000'
     }
@@ -75,36 +76,41 @@ pipeline {
                 }
 
                 // === 3. Build, Test & Generate Reports ===
-                stage('Build, Test & Generate Reports') {
-                    steps {
-                        withCredentials([
-                            usernamePassword(credentialsId: env.GPR_CREDENTIALS_ID, usernameVariable: 'GITHUB_ACTOR', passwordVariable: 'GITHUB_TOKEN'),
-                            // Context 로딩용 Credential 로드
-                            string(credentialsId: env.REDIS_HOST_CREDENTIAL, variable: 'REDIS_HOST'),
-                            string(credentialsId: env.REDIS_PORT_CREDENTIAL, variable: 'REDIS_PORT'),
-                            string(credentialsId: env.RABBITMQ_HOST_CREDENTIAL, variable: 'RABBITMQ_HOST'),
-                            string(credentialsId: env.RABBITMQ_PORT_CREDENTIAL, variable: 'RABBITMQ_PORT'),
-                            string(credentialsId: env.JWT_SECRET_KEY_CREDENTIAL, variable: 'JWT_SECRET_KEY')
-                        ]) {
-                            sh 'chmod +x ./gradlew'
-                            sh '''
-                            set -e
+                 stage('Build, Test & Generate Reports') {
+                      steps {
+                          withCredentials([
+                              usernamePassword(credentialsId: env.GPR_CREDENTIALS_ID, usernameVariable: 'GITHUB_ACTOR', passwordVariable: 'GITHUB_TOKEN'),
+                              string(credentialsId: env.REDIS_HOST_CREDENTIAL, variable: 'REDIS_HOST'),
+                              string(credentialsId: env.REDIS_PORT_CREDENTIAL, variable: 'REDIS_PORT'),
+                              string(credentialsId: env.RABBITMQ_HOST_CREDENTIAL, variable: 'RABBITMQ_HOST'),
+                              string(credentialsId: env.RABBITMQ_PORT_CREDENTIAL, variable: 'RABBITMQ_PORT'),
+                              string(credentialsId: env.JWT_SECRET_KEY_CREDENTIAL, variable: 'JWT_SECRET_KEY'),
+                              string(credentialsId: env.DB_URL_KEY_CREDENTIAL, variable: 'DB_URL')
+                          ]) {
+                              sh 'chmod +x ./gradlew'
+                              sh '''
+                                  set -e
 
-                            # Application Context 로딩에 필요한 모든 환경 변수 주입
-                            SPRING_PROFILES_ACTIVE=test \
-                            TZ=Asia/Seoul \
-                            REDIS_HOST=${REDIS_HOST} \
-                            REDIS_PORT=${REDIS_PORT} \
-                            RABBITMQ_HOST=${RABBITMQ_HOST} \
-                            RABBITMQ_PORT=${RABBITMQ_PORT} \
-                            JWT_SECRET_KEY=${JWT_SECRET_KEY} \
-                            ./gradlew clean build --no-daemon -Dspring.profiles.active=test
+                                  # Application Context 로딩에 필요한 모든 환경 변수 주입
+                                  # 이 변수들은 Shell 환경에서만 사용 (System.getenv()가 읽음)
+                                  SPRING_PROFILES_ACTIVE=test \
+                                  TZ=Asia/Seoul \
+                                  REDIS_HOST=${REDIS_HOST} \
+                                  REDIS_PORT=${REDIS_PORT} \
+                                  RABBITMQ_HOST=${RABBITMQ_HOST} \
+                                  RABBITMQ_PORT=${RABBITMQ_PORT} \
+                                  JWT_SECRET_KEY=${JWT_SECRET_KEY} \
+                                  GITHUB_ACTOR=${GITHUB_ACTOR} \
+                                  GITHUB_TOKEN=${GITHUB_TOKEN} \
+                                  DB_MASTER_URL=${DB_URL} \
+                                  DB_SLAVE_URL=${DB_URL} \
+                                  ./gradlew clean build --no-daemon -Dspring.profiles.active=test
 
-                            rm -f build/libs/*plain*.jar
-                            '''
-                        }
-                    }
-                }
+                                  rm -f build/libs/*plain*.jar
+                              '''
+                          }
+                      }
+                  }
 
                 // === 4. SonarQube Analysis ===
                 stage('SonarQube Analysis') {
@@ -143,7 +149,10 @@ pipeline {
                 // === 5. Build & Push Docker Image (GString 문제 해결) ===
                 stage('Build & Push Docker Image') {
                     steps {
-                        withCredentials([string(credentialsId: env.AWS_ACCOUNT_ID_CREDENTIALS_ID, variable: 'AWS_ACCOUNT_ID')]) {
+                        withCredentials([
+                            string(credentialsId: env.AWS_ACCOUNT_ID_CREDENTIALS_ID, variable: 'AWS_ACCOUNT_ID'),
+                            usernamePassword(credentialsId: env.GPR_CREDENTIALS_ID, usernameVariable: 'GITHUB_ACTOR', passwordVariable: 'GITHUB_TOKEN')
+                        ]) {
                             script {
                                 // 1. Groovy 스크립트 영역에서 변수 정의
                                 def ecrRegistryUri = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
@@ -162,16 +171,32 @@ pipeline {
                                     "LATEST_TAG=${latestTag}",
                                     "REGION=${env.AWS_REGION}"
                                 ]) {
-                                    // 3. 순수 Shell 스크립트 실행 (''' 사용, 이스케이프 불필요)
+                                    // 3. Shell 스크립트 실행 (''' 사용, 이스케이프 불필요)
                                     sh '''
                                         set -e
+                                        # BuildKit/Buildx 충돌을 방지하기 위해 DOCKER_BUILDKIT 변수 unset
+                                        unset DOCKER_BUILDKIT
+
+                                        # GITHUB_TOKEN을 임시 파일로 저장 (secret 마운트를 위해)
+                                        echo -n "$GITHUB_TOKEN" > github_token.tmp
+
                                         echo "🔐 Logging into ECR..."
                                         aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_REGISTRY_URI
 
-                                        echo "🏗️  Building Docker image..."
-                                        docker build -t $IMAGE_TAG -t $LATEST_TAG .
+                                        echo "🏗️  Building Docker image using Buildx..."
+
+                                        # 'docker buildx build' 명령을 명시적으로 사용
+                                        # '--load' 플래그를 추가하여 이미지를 로컬 도커 캐시에 저장
+                                        docker build \
+                                            --secret id=github_token,src=github_token.tmp \
+                                            -t $IMAGE_TAG -t $LATEST_TAG \
+                                            --load .
+
+                                        # 임시 파일 삭제
+                                        rm github_token.tmp
 
                                         echo "📤 Pushing to ECR..."
+                                        # 로컬 캐시에 저장된 이미지를 푸시
                                         docker push $IMAGE_TAG
                                         docker push $LATEST_TAG
                                     '''
