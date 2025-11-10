@@ -23,7 +23,7 @@ public class NotificationHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String traceId;
 
     @Column(nullable = false)
@@ -50,9 +50,9 @@ public class NotificationHistory {
     private LocalDateTime createdAt;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private NotificationHistory(Long memberId, String traceId, NotificationHistoryType type, String title, String body, NotificationHistoryStatus status, String failureReason) {
-        this.memberId = memberId;
+    private NotificationHistory(String traceId, Long memberId, NotificationHistoryType type, String title, String body, NotificationHistoryStatus status, String failureReason) {
         this.traceId = traceId;
+        this.memberId = memberId;
         this.type = type;
         this.title = title;
         this.body = body;
@@ -60,7 +60,7 @@ public class NotificationHistory {
         this.failureReason = failureReason;
     }
 
-    public static NotificationHistory of(Long memberId, String traceId, NotificationHistoryType type, String title, String body, NotificationHistoryStatus status, String failureReason) {
+    public static NotificationHistory of(String traceId, Long memberId, NotificationHistoryType type, String title, String body, NotificationHistoryStatus status, String failureReason) {
         return NotificationHistory.builder()
                 .memberId(memberId)
                 .traceId(traceId)

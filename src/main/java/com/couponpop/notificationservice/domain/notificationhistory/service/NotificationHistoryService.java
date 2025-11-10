@@ -18,7 +18,7 @@ public class NotificationHistoryService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createNotificationHistory(NotificationHistoryPayload payload) {
-        NotificationHistory notificationHistory = NotificationHistory.of(payload.memberId(), payload.traceId(), payload.type(), payload.title(), payload.body(), payload.status(), payload.failureReason());
+        NotificationHistory notificationHistory = NotificationHistory.of(payload.traceId(), payload.memberId(), payload.type(), payload.title(), payload.body(), payload.status(), payload.failureReason());
         notificationHistoryRepository.save(notificationHistory);
     }
 }
