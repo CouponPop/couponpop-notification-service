@@ -14,12 +14,12 @@ import static com.couponpop.couponpopcoremodule.constants.RabbitMqExchanges.COUP
 @Configuration
 public class CouponUsageStatsFcmSendConsumerConfig {
 
-    public static final String COUPON_USAGE_STATS_FCM_SEND_QUEUE = "coupon.usage.stats.fcm.send.queue";
+    public static final String COUPON_USAGE_STATS_FCM_SEND_QUEUE = "coupon.usage.stats.fcm.send.queue.v1";
     public static final int COUPON_USAGE_STATS_FCM_SEND_QUEUE_TTL_SECONDS = 300; // 5 minutes
     public static final String COUPON_USAGE_STATS_FCM_SEND_BINDING_KEY = "coupon.usage.stats.fcm.send";
 
     public static final String COUPON_USAGE_STATS_FCM_SEND_DLX = COUPON_EXCHANGE + ".dlx";
-    public static final String COUPON_USAGE_STATS_FCM_SEND_DLQ = "coupon.usage.stats.fcm.send.dlq";
+    public static final String COUPON_USAGE_STATS_FCM_SEND_DLQ = "coupon.usage.stats.fcm.send.dlq.v1";
     public static final int COUPON_USAGE_STATS_FCM_SEND_DLQ_TTL_SECONDS = 60 * 60 * 24 * 7; // 7 days
     public static final String COUPON_USAGE_STATS_FCM_SEND_DLQ_BINDING_KEY = "coupon.usage.stats.fcm.send.dlq";
 
