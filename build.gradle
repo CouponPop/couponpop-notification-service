@@ -153,12 +153,18 @@ dependencies {
     // [RabbitMQ]
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
 
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
     // [Jackson]
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
 
     // [Micrometer Prometheus Registry]
     implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    // [Slack]
+    implementation 'com.slack.api:slack-api-client:1.46.0'
 }
 
 tasks.named('test') {

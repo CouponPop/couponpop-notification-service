@@ -36,7 +36,15 @@ public class CouponConsumer {
             String title = NotificationTemplates.COUPON_USED_TITLE.formatted(eventName);
             String body = NotificationTemplates.COUPON_USED_BODY.formatted(eventName, storeName);
 
-            fcmTokens.forEach(fcmToken -> fcmSendService.sendNotification(memberId, fcmToken.getFcmToken(), title, body));
+            /*
+             * TODO
+             *   - 알림 중복 전송 방지(멱등성)를 위한 이벤트 발행 쪽에서의 traceId 생성 필요합니다.
+             *   - traceId 생성 로직은 코어 모듈의 NotificationTraceIdGenerator.generate() 메서드 참고 바랍니다.
+             *   - 현재는 traceId 없이 null로 임시 처리했습니다.
+             */
+            fcmTokens.forEach(fcmToken -> {
+                fcmSendService.sendNotification(null, memberId, fcmToken.getFcmToken(), title, body);
+            });
         } catch (Exception e) {
             log.error("쿠폰 사용 FCM 요청 처리 중 오류 발생: {}", message, e);
         }
