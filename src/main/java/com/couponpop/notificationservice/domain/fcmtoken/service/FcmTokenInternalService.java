@@ -10,4 +10,6 @@ public interface FcmTokenInternalService {
     void expireFcmToken(FcmTokenExpireRequest fcmTokenExpireRequest, Long memberId);
 
     List<FcmTokensResponse> fetchFcmTokensByMemberIds(List<Long> memberIds);
+
+    FcmTokensResponse fetchFcmTokensByMemberId(Long memberId);
 }

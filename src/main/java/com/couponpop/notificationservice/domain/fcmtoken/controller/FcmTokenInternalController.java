@@ -8,10 +8,7 @@ import com.couponpop.security.annotation.CurrentMember;
 import com.couponpop.security.dto.AuthMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -33,6 +30,13 @@ public class FcmTokenInternalController {
     public ResponseEntity<ApiResponse<List<FcmTokensResponse>>> fetchFcmTokensByMemberIds(@RequestBody List<Long> memberIds) {
 
         List<FcmTokensResponse> response = fcmTokenInternalService.fetchFcmTokensByMemberIds(memberIds);
+        return ApiResponse.success(response);
+    }
+
+    @GetMapping("/v1/fcm-tokens/members/{memberId}")
+    public ResponseEntity<ApiResponse<FcmTokensResponse>> fetchFcmTokensByMemberId(@PathVariable Long memberId) {
+
+        FcmTokensResponse response = fcmTokenInternalService.fetchFcmTokensByMemberId(memberId);
         return ApiResponse.success(response);
     }
 }
