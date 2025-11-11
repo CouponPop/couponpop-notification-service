@@ -1,6 +1,6 @@
 package com.couponpop.notificationservice.common.rabbitmq.consumer;
 
-import com.couponpop.couponpopcoremodule.dto.coupon.event.model.CouponUsedMessage;
+import com.couponpop.couponpopcoremodule.dto.coupon.event.model.CouponIssuedMessage;
 import com.couponpop.notificationservice.common.slack.service.SlackService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-import static com.couponpop.notificationservice.common.rabbitmq.config.CouponUsedConsumerConfig.COUPON_USED_DLQ;
+import static com.couponpop.notificationservice.common.rabbitmq.config.CouponIssuedConsumerConfig.COUPON_ISSUED_DLQ;
 import static com.couponpop.notificationservice.common.utils.SecurityStringUtils.maskToken;
 import static com.couponpop.notificationservice.common.utils.SecurityStringUtils.safeString;
 import static java.util.Map.entry;
@@ -18,14 +18,14 @@ import static java.util.Map.entry;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CouponUsedDlqConsumer {
+public class CouponIssuedDlqConsumer {
 
     private final SlackService slackService;
 
-    @RabbitListener(queues = COUPON_USED_DLQ)
-    public void handleDlq(CouponUsedMessage payload, Message message) {
+    @RabbitListener(queues = COUPON_ISSUED_DLQ)
+    public void handleDlq(CouponIssuedMessage payload, Message message) {
 
-        log.error("쿠폰 사용 FCM DLQ 적재: memberId={}, token={}, headers={}",
+        log.error("쿠폰 발행 FCM DLQ 적재: memberId={}, token={}, headers={}",
                 payload.memberId(),
                 payload.token(),
                 message.getMessageProperties().getHeaders());
@@ -40,6 +40,8 @@ public class CouponUsedDlqConsumer {
                 entry("storeId", safeString(payload.storeId())),
                 entry("storeName", safeString(payload.storeName())),
                 entry("eventId", safeString(payload.eventId())),
+                entry("totalCount", safeString(payload.totalCount())),
+                entry("issuedCount", safeString(payload.issuedCount())),
                 entry("eventName", safeString(payload.eventName())),
                 entry("messageType", safeString(payload.messageType())),
                 entry("xDeath", safeString(headers.get("x-death"))),
@@ -47,6 +49,6 @@ public class CouponUsedDlqConsumer {
                 entry("stacktrace", safeString(headers.get("x-exception-stacktrace"))),
                 entry("routingKey", safeString(message.getMessageProperties().getReceivedRoutingKey()))
         );
-        slackService.sendMessage("쿠폰 사용 FCM DLQ 적재", slackData);
+        slackService.sendMessage("쿠폰 발행 FCM DLQ 적재", slackData);
     }
 }
