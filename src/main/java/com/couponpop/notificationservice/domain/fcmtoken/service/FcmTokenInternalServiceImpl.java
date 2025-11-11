@@ -46,4 +46,13 @@ public class FcmTokenInternalServiceImpl implements FcmTokenInternalService {
                 .map(entry -> FcmTokensResponse.of(entry.getKey(), entry.getValue()))
                 .toList();
     }
+
+    @Override
+    public FcmTokensResponse fetchFcmTokensByMemberId(Long memberId) {
+        List<String> fcmTokens = fcmTokenRepository.findByMemberIdAndNotificationEnabledIsTrue(memberId).stream()
+                .map(FcmToken::getFcmToken)
+                .toList();
+
+        return FcmTokensResponse.of(memberId, fcmTokens);
+    }
 }
