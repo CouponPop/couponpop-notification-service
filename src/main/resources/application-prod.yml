@@ -25,6 +25,8 @@ logging:
     org.springframework: INFO
     org.hibernate.SQL: WARN
     org.hibernate.orm.jdbc.bind: WARN
+    com.couponpop.notificationservice: DEBUG
+    com.couponpop.security: DEBUG
 
 cloud:
   aws:
