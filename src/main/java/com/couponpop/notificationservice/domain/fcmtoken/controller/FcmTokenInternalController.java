@@ -4,8 +4,6 @@ import com.couponpop.couponpopcoremodule.dto.fcmtoken.request.FcmTokenExpireRequ
 import com.couponpop.couponpopcoremodule.dto.fcmtoken.response.FcmTokensResponse;
 import com.couponpop.notificationservice.common.response.ApiResponse;
 import com.couponpop.notificationservice.domain.fcmtoken.service.FcmTokenInternalService;
-import com.couponpop.security.annotation.CurrentMember;
-import com.couponpop.security.dto.AuthMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,9 +18,9 @@ public class FcmTokenInternalController {
     private final FcmTokenInternalService fcmTokenInternalService;
 
     @PostMapping("/v1/fcm-token/expire")
-    public ResponseEntity<ApiResponse<Void>> expireFcmToken(@RequestBody FcmTokenExpireRequest fcmTokenExpireRequest, @CurrentMember AuthMember authMember) {
+    public ResponseEntity<ApiResponse<Void>> expireFcmToken(@RequestBody FcmTokenExpireRequest fcmTokenExpireRequest) {
 
-        fcmTokenInternalService.expireFcmToken(fcmTokenExpireRequest, authMember.id());
+        fcmTokenInternalService.expireFcmToken(fcmTokenExpireRequest);
         return ApiResponse.noContent();
     }
 
