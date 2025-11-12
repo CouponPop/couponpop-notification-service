@@ -23,11 +23,11 @@ public class FcmTokenInternalServiceImpl implements FcmTokenInternalService {
      * EDA 적용 가능
      */
     @Override
-    public void expireFcmToken(FcmTokenExpireRequest fcmTokenExpireRequest, Long memberId) {
+    public void expireFcmToken(FcmTokenExpireRequest fcmTokenExpireRequest) {
 
         // 기존 구현 메서드
         fcmTokenRepository
-                .findByMemberIdAndFcmToken(memberId, fcmTokenExpireRequest.fcmToken())
+                .findByMemberIdAndFcmToken(fcmTokenExpireRequest.memberId(), fcmTokenExpireRequest.fcmToken())
                 .ifPresent(fcmTokenRepository::delete);
     }
 

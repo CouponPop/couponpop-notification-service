@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface FcmTokenInternalService {
 
-    void expireFcmToken(FcmTokenExpireRequest fcmTokenExpireRequest, Long memberId);
+    void expireFcmToken(FcmTokenExpireRequest fcmTokenExpireRequest);
 
     List<FcmTokensResponse> fetchFcmTokensByMemberIds(List<Long> memberIds);
 
