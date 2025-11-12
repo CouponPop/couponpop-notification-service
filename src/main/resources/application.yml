@@ -93,3 +93,8 @@ async:
 webhook:
   slack:
     url: ${SLACK_WEBHOOK_URL}
+
+logging:
+  level:
+    com.couponpop.notificationservice: DEBUG
+    com.couponpop.security: DEBUG
