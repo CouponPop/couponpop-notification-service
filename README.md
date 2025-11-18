@@ -14,7 +14,7 @@ CouponPop 이벤트에 대한 푸시 알림을 담당하는 Spring Boot 3 마이
 | 이벤트       | 큐                                      | 라우팅 키                         | 소비자                               | 처리 결과                     |
 |-----------|----------------------------------------|-------------------------------|-----------------------------------|---------------------------|
 | 쿠폰 발행     | `coupon.queue.issued`                  | `coupon.issued`               | `CouponIssuedConsumer`            | 발행 템플릿으로 FCM 발송 + 히스토리 적재 |
-| 쿠폰 사용     | `coupon.queue.used`                    | `coupon.used`                 | `CouponConsumer`                  | 사용 템플릿으로 FCM 발송           |
+| 쿠폰 사용     | `coupon.queue.used`                    | `coupon.used`                 | `CouponConsumer`                  | 사용 템플릿으로 FCM 발송 + 히스토리 적재 |
 | 사용 통계 FCM | `coupon.usage.stats.fcm.send.queue.v1` | `coupon.usage.stats.fcm.send` | `CouponUsageStatsFcmSendConsumer` | “해당 동에서 진행 중인 이벤트” 알림 발송  |
 
 모든 큐는 DLX(`coupon.exchange.dlx`)와 DLQ(`*.dlq`)를 갖고 있으며, 본 큐 메시지는 TTL 5분, DLQ는 7일 보관합니다. DLQ 소비자(`CouponIssuedDlqConsumer`, `CouponUsedDlqConsumer`, `CouponUsageStatsFcmSendDlqConsumer`)는 토큰을 마스킹해 Slack으로 상세 정보를 전송합니다.
